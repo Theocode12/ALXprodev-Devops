@@ -1,0 +1,41 @@
+#!/bin/bash
+
+function get()
+{
+   local url=$1
+   local data=$(curl -G -H "Content-Type: application/json" -s "$url")
+   local status=$?
+
+   if [ $status -eq 0 ]
+    then 
+        echo $data
+    else
+        echo "$data" > errors.txt
+    fi
+}
+
+pokemons_url="https://pokeapi.co/api/v2/pokemon/"
+pokemons_data=$(get $pokemons_url)
+
+if [[ -z $pokemons_data ]]
+then
+    echo "Failed to fetch pokemon list"
+    exit
+fi
+
+pokemon_url=$(echo "$pokemons_data" | jq -r ".results[0] | .url")
+
+if [[ -z $pokemon_url ]]
+then
+    echo "Failed to fetch extract pokemon url"
+    exit
+fi
+
+pokemon_data=$(get $pokemon_url)
+
+if [[ -n $pokemon_data ]]
+then 
+    echo $pokemon_data | jq '.' > data.json
+else
+    echo "No data"
+fi
