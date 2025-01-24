@@ -32,6 +32,7 @@ function get_all_pokemon()
 
 pokemon_names=("bulbasaur", "ivysaur", "venusaur", "charmander", "charmeleon")
 pokemons_data=$(get_all_pokemon)
+num_of_retries="3"
 
 for i in {0..4}
 do
@@ -43,14 +44,16 @@ do
         exit
     fi
 
-    pokemon_data=$(get $pokemon_url)
+    for i in {1..${num_of_retries}}
+    do
+       pokemon_data=$(get $pokemon_url)
+       if [[ -n $pokemon_data ]]
+        then
+            filename=$(echo $pokemon_data | jq -r '.name' | sed -e 's/\w\+/\0.json/g')
+            echo $pokemon_data | jq '.' > $filename
+            break
+        fi      
+    done
 
-    if [[ -n $pokemon_data ]]
-    then
-        filename=$(echo $pokemon_data | jq -r '.name' | sed -e 's/\w\+/\0.json/g')
-        echo $pokemon_data | jq '.' > $filename
-    else
-        echo "No data"
-    fi
     sleep 1
 done
