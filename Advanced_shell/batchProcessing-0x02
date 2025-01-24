@@ -1,0 +1,56 @@
+#!/bin/bash
+
+
+
+function get()
+{
+   local url=$1
+   local data=$(curl -G -H "Content-Type: application/json" -s "$url")
+   local status=$?
+
+   if [ $status -eq 0 ]
+    then 
+        echo $data
+    else
+        echo "$data" > errors.txt
+    fi
+}
+
+function get_all_pokemon()
+{
+    local pokemons_url="https://pokeapi.co/api/v2/pokemon/"
+    local pokemons_data=$(get $pokemons_url)
+    
+    if [[ -z $pokemons_data ]]
+    then
+        echo "Failed to fetch pokemon list"
+        exit
+    fi
+
+    echo $pokemons_data
+}
+
+pokemon_names=(Bulbasaur, Ivysaur, Venusaur, Charmander, Charmeleon)
+pokemons_data=$(get_all_pokemon)
+
+for i in {0..4}
+do
+    pokemon_url=$(echo "$pokemons_data" | jq -r ".results[${i}] | .url")
+
+    if [[ -z $pokemon_url ]]
+    then
+        echo "Failed to fetch extract pokemon url"
+        exit
+    fi
+
+    pokemon_data=$(get $pokemon_url)
+
+    if [[ -n $pokemon_data ]]
+    then
+        filename=$(echo $pokemon_data | jq -r '.name' | sed -e 's/\w\+/\0.json/g')
+        echo $pokemon_data | jq '.' > $filename
+    else
+        echo "No data"
+    fi
+    sleep 1
+done
