@@ -30,7 +30,7 @@ function get_all_pokemon()
     echo $pokemons_data
 }
 
-pokemon_names=("Bulbasaur", "Ivysaur", "Venusaur", "Charmander", "Charmeleon")
+pokemon_names=("bulbasaur", "ivysaur", "venusaur", "charmander", "charmeleon")
 pokemons_data=$(get_all_pokemon)
 
 for i in {0..4}
