@@ -1,0 +1,28 @@
+#!/bin/bash
+
+function param_extractor()
+{
+    filename=$1
+    name=$(jq -r ".name" $filename)
+    height=$(jq -r ".height" $filename)
+    weight=$(jq -r ".weight" $filename)
+
+    formatted_height=$(awk "BEGIN {print $height / 10}")
+    formatted_weight=$(awk "BEGIN {print $weight / 10}")
+
+    echo "${name},${formatted_height},${formatted_weight}"
+}
+
+filenames=("bulbasaur" "ivysaur" "venusaur" "charmander" "charmeleon")
+new_filename='pokemon.csv'
+if [ -e "${new_filename}" ]; then
+    echo -n > $new_filename
+fi
+
+for filename in "${filenames[@]}"
+do
+    data=$(param_extractor "${filename}.json")
+    echo $data >> $new_filename
+done
+
+awk -F ',' 'BEGIN {sum_height=0; sum_weight=0} {sum_height+=$2; sum_weight+=$3} END {print sum_height/NR ; print sum_weight/NR}' $new_filename
