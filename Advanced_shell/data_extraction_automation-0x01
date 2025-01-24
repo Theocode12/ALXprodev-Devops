@@ -1,9 +1,12 @@
 #!/bin/bash
 
-NAME=$(jq -r ".name" data.json)
-HEIGHT=$(jq -r ".height" data.json)
-WEIGHT=$(jq -r ".weight" data.json)
-TYPE=$(jq -r ".types[0] | .type.name" data.json)
+name=$(jq -r ".name" data.json)
+height=$(jq -r ".height" data.json)
+weight=$(jq -r ".weight" data.json)
+type=$(jq -r ".types[0] | .type.name" data.json)
 
-OUTPUT="$NAME is of type $TYPE, weighs ${WEIGHT}kg, and is ${HEIGHT}m tall."
+formatted_height=$(awk "BEGIN {print $height / 10}")
+formatted_weight=$(awk "BEGIN {print $weight / 10}")
+
+OUTPUT="$name is of type $type, weighs ${formatted_weight}kg, and is ${formatted_height}m tall."
 echo $OUTPUT
