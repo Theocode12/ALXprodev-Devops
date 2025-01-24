@@ -8,5 +8,4 @@ type=$(jq -r ".types[0] | .type.name" data.json)
 formatted_height=$(awk "BEGIN {print $height / 10}")
 formatted_weight=$(awk "BEGIN {print $weight / 10}")
 
-OUTPUT="$name is of type $type, weighs ${formatted_weight}kg, and is ${formatted_height}m tall."
-echo $OUTPUT
+echo "Pikachu is of type Electric, weighs 6kg, and is 0.4m tall." | sed -e s/Pikachu/$name/ -e s/Electric/$type/ -e  s/6kg/${formatted_weight}kg/ -e s/0.4m/${formatted_height}m/
