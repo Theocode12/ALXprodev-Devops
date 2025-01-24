@@ -26,3 +26,4 @@ do
 done
 
 awk -F ',' 'BEGIN {sum_height=0; sum_weight=0} {sum_height+=$2; sum_weight+=$3} END {print sum_height/NR ; print sum_weight/NR}' $new_filename
+#sed
