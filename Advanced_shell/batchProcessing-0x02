@@ -1,7 +1,6 @@
 #!/bin/bash
 
 
-
 function get()
 {
    local url=$1
@@ -30,19 +29,10 @@ function get_all_pokemon()
     echo $pokemons_data
 }
 
-pokemon_names=("bulbasaur", "ivysaur", "venusaur", "charmander", "charmeleon")
-pokemons_data=$(get_all_pokemon)
-num_of_retries="3"
-
-for i in {0..4}
-do
-    pokemon_url=$(echo "$pokemons_data" | jq -r ".results[${i}] | .url")
-
-    if [[ -z $pokemon_url ]]
-    then
-        echo "Failed to fetch extract pokemon url"
-        exit
-    fi
+function get_pokemon()
+{
+    local num_of_retries="3"
+    local pokemon_url=$1
 
     for i in {1..${num_of_retries}}
     do
@@ -54,6 +44,27 @@ do
             break
         fi      
     done
+}
 
+pokemon_names=("bulbasaur" "ivysaur" "venusaur" "charmander" "charmeleon")
+pokemons_data=$(get_all_pokemon)
+
+
+for i in {0..4}
+do
+    pokemon_url=$(echo "$pokemons_data" | jq -r ".results[${i}] | .url")
+
+    if [[ -z $pokemon_url ]]
+    then
+        echo "Failed to fetch extract pokemon url"
+        exit
+    fi
+
+    get_pokemon "$pokemon_url" &
+    
     sleep 1
 done
+
+wait
+
+echo "Finished"
